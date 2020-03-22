@@ -16,6 +16,9 @@ sqlalchemy.url = sqlite:///%(here)s/corona.sqlite
 
 retry.attempts = 3
 
+cookie_secret = please_change_me
+media_location = https://www.corona-verfuegbarkeit.de/static
+
 [pshell]
 setup = corona.pshell.setup
 
