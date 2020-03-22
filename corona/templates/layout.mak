@@ -19,9 +19,9 @@
     </head>
     <body>
 	<div class="container">
-	    <%include file="navbar.mak" />
-	    ${self.body()}
-	    <%include file="footer.mak" />
+	    <%include file="includes/navbar.mak" />
+	    ${next.body()}
+	    <%include file="includes/footer.mak" />
 	</div>
 
 	## Dependencies

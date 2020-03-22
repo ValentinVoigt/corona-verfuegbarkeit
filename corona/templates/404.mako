@@ -1,10 +1,7 @@
 <%inherit file="layout.mak"/>
 
-<h1>
-    <span class="font-semi-bold">Pyramid</span>
-    <span class="smaller">Starter project</span>
-</h1>
+<h1>Corona-Verfuegbarkeit.de</h1>
 
 <p class="lead">
-    <span class="font-semi-bold">404</span> Page Not Found
+    <span class="font-semi-bold">404</span> &mdash; Seite nicht gefunden
 </p>

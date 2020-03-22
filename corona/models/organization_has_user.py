@@ -13,5 +13,5 @@ class OrganizationHasUser(Base):
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     permission = Column(Enum("owner", "admin", "auditor", "member", name="permssions"))
 
-    organization = relationship("Organization")
-    user = relationship("User")
+    organization = relationship("Organization", backref="has_users")
+    user = relationship("User", backref="has_organizations")

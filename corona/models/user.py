@@ -15,3 +15,14 @@ class User(Base):
     auth_token = Column(String)
     password = Column(String)
     salt = Column(String)
+
+    @property
+    def organizations(self):
+        result = []
+        for has_organization in self.has_organizations:
+            result.append(has_organization.organization)
+        return result
+
+    @property
+    def display_name(self):
+        return f"{self.first_name} {self.last_name}"
