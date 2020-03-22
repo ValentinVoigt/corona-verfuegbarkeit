@@ -1,0 +1,3 @@
+[run]
+source = corona
+omit = corona/test*
