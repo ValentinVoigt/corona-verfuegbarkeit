@@ -25,7 +25,7 @@ class RegistrationForm(Form):
             raise ValidationError("Die beiden Passwörter stimmen nicht überein.")
 
 
-@view_config(route_name="register", renderer="../templates/register.mak")
+@view_config(route_name="register", renderer="../templates/register.mako")
 def register(request):
     form = RegistrationForm(request.POST)
     error = None

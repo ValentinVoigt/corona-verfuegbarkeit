@@ -6,7 +6,7 @@ from ..security import check_password
 from ..models import User
 
 
-@view_config(route_name="login", renderer="../templates/login.mak")
+@view_config(route_name="login", renderer="../templates/login.mako")
 def login(request):
     login_url = request.route_url("login")
     referrer = request.url

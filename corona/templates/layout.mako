@@ -18,9 +18,9 @@
 	<title>Corona-Verfügkarbeit</title>
     </head>
     <body>
-	<%include file="includes/navbar.mak" />
+	<%include file="includes/navbar.mako" />
 	${next.body()}
-	<%include file="includes/footer.mak" />
+	<%include file="includes/footer.mako" />
 
 	## Dependencies
 	<script
