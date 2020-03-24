@@ -1,6 +1,12 @@
 from sqlalchemy import Column, DateTime, Integer, String, text
+import base64
+import os
 
 from .meta import Base
+
+
+def generate_token():
+    return base64.urlsafe_b64encode(os.urandom(12)).decode("utf-8")
 
 
 class User(Base):
@@ -12,9 +18,10 @@ class User(Base):
     last_name = Column(String)
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     last_login = Column(DateTime)
-    auth_token = Column(String)
+    auth_token = Column(String, default=generate_token, unique=True)
     password = Column(String)
     salt = Column(String)
+    last_invite = Column(DateTime)
 
     @property
     def organizations(self):
@@ -24,5 +31,16 @@ class User(Base):
         return result
 
     @property
+    def root_organizations(self):
+        result = []
+        for has_organization in self.has_organizations:
+            if has_organization.organization.parent_organization_id is None:
+                result.append(has_organization.organization)
+        return result
+
+    @property
     def display_name(self):
-        return f"{self.first_name} {self.last_name}"
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        else:
+            return self.first_name or self.last_name or self.email

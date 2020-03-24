@@ -12,5 +12,44 @@ def includeme(config):
     config.add_route("logout", "/logout")
     config.add_route("register", "/registrieren")
 
-    # Dashboard
+    # Organizations
     config.add_route("dashboard/organizations", "/login/organisationen")
+    config.add_route(
+        "dashboard/organizations/show",
+        "/login/organisationen/{id}",
+        factory="corona.models.organization.Organization._factory",
+    )
+
+    # Users
+    config.add_route(
+        "dashboard/users/new",
+        "/login/organisationen/{id}/neues-mitglied",
+        factory="corona.models.organization.Organization._factory",
+    )
+    config.add_route(
+        "dashboard/users/invite",
+        "/login/organisationen/{id}/mitglieder-einladen",
+        factory="corona.models.organization.Organization._factory",
+    )
+    config.add_route(
+        "dashboard/users/new-batch",
+        "/login/organisationen/{id}/neue-mitglieder",
+        factory="corona.models.organization.Organization._factory",
+    )
+    config.add_route(
+        "dashboard/users/show",
+        "/login/mitglieder/{id}",
+        factory="corona.models.organization_has_user.OrganizationHasUser._factory",
+    )
+
+    # Roles
+    config.add_route(
+        "dashboard/roles/new",
+        "/login/rollen/{id}/neue",
+        factory="corona.models.organization.Organization._factory",
+    )
+    config.add_route(
+        "dashboard/roles/show",
+        "/login/rollen/{id}",
+        factory="corona.models.role.Role._factory",
+    )

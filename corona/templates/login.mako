@@ -1,4 +1,4 @@
-<%inherit file="layout.mak"/>
+<%inherit file="layout.mako"/>
 
 <form class="form-signin" action="${request.route_path('login')}" method="POST">
     <h1 class="h3 mb-3 font-weight-normal">Einloggen</h1>

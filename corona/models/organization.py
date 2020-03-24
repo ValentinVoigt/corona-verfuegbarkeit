@@ -1,5 +1,6 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Float, Integer, String, text
 from sqlalchemy.orm import relationship
+from pyramid.security import Allow
 
 from .meta import Base
 
@@ -17,4 +18,43 @@ class Organization(Base):
     latitude = Column(Float(53))
     logo_url = Column(String)
 
-    parent_organization = relationship("Organization", remote_side=[id])
+    parent = relationship("Organization", backref="children", remote_side=[id])
+
+    @classmethod
+    def _factory(cls, request):
+        return (
+            request.dbsession.query(cls)
+            .filter(cls.id == request.matchdict.get("id"))
+            .one()
+        )
+
+    def __acl__(self):
+        return [
+            (Allow, f"user:{user.id}", "edit") for user in self.users
+        ]
+
+    @property
+    def users(self):
+        users = [h.user for h in self.has_users]
+        if self.parent:
+            users.extend(self.parent.users)
+        return users
+
+    def has_user(self, email):
+        return any([user.email.lower() == email.lower() for user in self.users])
+
+    @property
+    def recursive_roles(self):
+        result = []
+        for role in self.roles:
+            result.append((self, role))
+        if self.parent:
+            result.extend(self.parent.recursive_roles)
+        return result
+
+    @property
+    def display_name(self):
+        if self.parent:
+            return f"{self.parent.name}, {self.name}"
+        else:
+            return self.name

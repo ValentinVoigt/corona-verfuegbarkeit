@@ -1,6 +1,7 @@
 from pyramid.config import Configurator
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.session import SignedCookieSessionFactory
 
 from .security import groupfinder
 
@@ -17,6 +18,13 @@ def main(global_config, **settings):
         config.set_authentication_policy(authn_policy)
         config.set_authorization_policy(authz_policy)
 
+        # Session
+        my_session_factory = SignedCookieSessionFactory(
+            settings["cookie_secret"], httponly=True
+        )
+        config.set_session_factory(my_session_factory)
+
+        # Includes
         config.include("pyramid_mako")
         config.include("pyramid_mailer")
         config.include(".models")

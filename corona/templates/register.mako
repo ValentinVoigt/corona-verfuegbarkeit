@@ -1,4 +1,4 @@
-<%inherit file="layout.mak"/>
+<%inherit file="layout.mako"/>
 
 <%namespace file="functions/field.mako" import="field"/>
 

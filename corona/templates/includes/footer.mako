@@ -1,4 +1,4 @@
-<footer class="pt-4 my-md-5 pt-md-5 border-top">
+<footer class="pt-4 my-5 pt-5 border-top">
     <div class="container">
 	<div class="row">
 	    <div class="col-12 col-md">
@@ -21,7 +21,7 @@
 		    <a href="https://www.python.org/">Python</a>,
 		    <a href="https://trypyramid.com/">Pyramid</a>,
 		    <a href="https://www.sqlalchemy.org/">SQLAlchemy</a>
-		    und ganz viel ❤️ findest uns auf
+		    und ganz viel ❤️ findest du uns auf
 		    <a href="https://github.com/valentinvoigt/corona-verfuegbarkeit">GitHub</a>.
 		</p>
 	    </div>
@@ -31,13 +31,15 @@
 		    Mit freundlicher Unterstüzung der
 		    <a href="https://www.auf-nach-mallorca.info/">Auf nach Mallorca GmbH</a>.
 		</p>
-		<a href="https://www.auf-nach-mallorca.info/">
-		    <img
-			src="https://www.auf-nach-mallorca.info/static/ncms/img/logos/auf-nach-mallorca.png"
-			width="240"
-			height="120"
-		    />
-		</a>
+		<%doc>
+		    <a href="https://www.auf-nach-mallorca.info/">
+			<img
+			    src="https://www.auf-nach-mallorca.info/static/ncms/img/logos/auf-nach-mallorca.png"
+			    width="240"
+			    height="120"
+			/>
+		    </a>
+		</%doc>
 	    </div>
 	</div>
     </div>

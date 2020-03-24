@@ -16,7 +16,7 @@ def check_password(pw, hashed_pw):
 def groupfinder(userid, request):
     user = request.dbsession.query(User).filter(User.email == userid).first()
     if user:
-        return ["g:all"]
+        return ["group:all", f"user:{user.id}"]
 
 
 def includeme(config):

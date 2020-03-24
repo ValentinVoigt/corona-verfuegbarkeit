@@ -1,4 +1,4 @@
-<%inherit file="layout.mak"/>
+<%inherit file="layout.mako"/>
 
 <div class="container">
     <div class="jumbotron">

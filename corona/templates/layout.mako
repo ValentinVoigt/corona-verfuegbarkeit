@@ -19,6 +19,15 @@
     </head>
     <body>
 	<%include file="includes/navbar.mako" />
+	% if request.session.peek_flash():
+	    <div class="container">
+		% for message in request.session.pop_flash():
+		    <div class="alert alert-success">
+			${message}
+		    </div>
+		% endfor
+	    </div>
+	% endif
 	${next.body()}
 	<%include file="includes/footer.mako" />
 
