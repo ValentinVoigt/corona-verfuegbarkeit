@@ -1,4 +1,5 @@
 from datetime import datetime
+from pyramid.security import Allow
 
 import bcrypt
 
@@ -30,6 +31,16 @@ def get_current_user(request):
     if user:
         user.last_login = datetime.now()
     return user
+
+
+class RootFactory(object):
+    """
+    Das Wurzelobjekt für den Traversal Tree. Mit URL Dispatch nur wichtig
+    um die globale ACL zu liefern.
+    """
+
+    def __init__(self, request):
+        self.__acl__ = [(Allow, "group:all", "loggedin")]
 
 
 def includeme(config):

@@ -8,7 +8,7 @@
         Reinhard Randoll (Verantwortlicher &amp; vertretungsberechtigte Person)<br />
         Kehlstr. 99<br />
         71665 Vaihingen/Enz<br />
-        admin@corona-verfuegbarkeit.de<br />
+        info@corona-verfuegbarkeit.de<br />
         +4970429683071<br />
     </p>
 
@@ -23,7 +23,7 @@
         Reinhard Randoll (Verantwortlicher &amp; vertretungsberechtigte Person)<br />
         Kehlstr. 99<br />
         71665 Vaihingen/Enz<br />
-        admin@corona-verfuegbarkeit.de<br />
+        info@corona-verfuegbarkeit.de<br />
         +4970429683071<br />
     </p>
     <h3>Zweck der Erhebung und Verarbeitung personenbezogener Daten, Rechtsgrundlage</h3>

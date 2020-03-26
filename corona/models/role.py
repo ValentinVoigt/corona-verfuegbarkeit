@@ -35,4 +35,7 @@ class Role(Base):
         )
 
     def __acl__(self):
-        return [(Allow, f"user:{user.id}", "edit") for user in self.organization.users]
+        return [
+            (Allow, f"user:{user.id}", "edit")
+            for user in self.organization.users_with_up("admin")
+        ]

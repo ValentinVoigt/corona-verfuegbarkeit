@@ -130,11 +130,22 @@ def show(request):
 def new(request):
     form = UserForm(request.POST)
     if request.method == "POST" and form.validate():
-        if request.context.has_user(form.email.data):
+        if form.email.data.lower() in [
+            h.user.email.lower() for h in request.context.has_users
+        ]:
             request.session.flash("Mitglied mit dieser E-Mail-Adresse existiert schon.")
         else:
-            user = User()
-            form.populate_obj(user)
+            existing_user = (
+                request.dbsession.query(User)
+                .filter(User.email == form.email.data)
+                .first()
+            )
+            if existing_user:
+                user = existing_user
+            else:
+                user = User()
+                form.populate_obj(user)
+
             has_user = OrganizationHasUser(organization=request.context, user=user)
             request.dbsession.flush()
             request.session.flash("Neues Mitglied wurde hinzugefügt")

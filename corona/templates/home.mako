@@ -20,7 +20,7 @@
 
     <h2>Weitere Informationen</h2>
 
-    Dieses Projekt startete am 22.3.2020. Gib uns dein Feedback an ....@corona-verfügbarkeit.de.
+    Dieses Projekt startete am 22.3.2020. Gib uns dein Feedback an info@corona-verfügbarkeit.de.
 
     <h3>Rollen</h3>
 

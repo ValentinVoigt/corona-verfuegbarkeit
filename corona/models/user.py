@@ -1,6 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Enum, DateTime, Integer, String, text
-from sqlalchemy.orm import relationship
-from pyramid.security import Allow
+from sqlalchemy import Column, DateTime, Integer, String, text
 
 import base64
 import os
@@ -16,7 +14,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    email = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
     first_name = Column(String)
     last_name = Column(String)
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
@@ -37,10 +35,14 @@ class User(Base):
 
     @property
     def root_organizations(self):
+        working = [h.organization for h in self.has_organizations]
         result = []
-        for has_organization in self.has_organizations:
-            if has_organization.organization.parent_organization_id is None:
-                result.append(has_organization.organization)
+        while len(working) > 0:
+            current = working.pop()
+            if current.parent:
+                working.append(current.parent)
+            elif current not in result:
+                result.append(current)
         return result
 
     def ensure_token_exists(self):

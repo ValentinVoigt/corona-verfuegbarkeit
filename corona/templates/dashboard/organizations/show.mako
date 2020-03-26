@@ -64,34 +64,38 @@
                         % endif
                     </td>
                     <td class="text-right">
-                        <a class="btn btn-sm btn-secondary" href="${request.route_path('dashboard/users/show', id=has_user.id)}">
-                            Bearbeiten
-                        </a>
+                        % if request.has_permission("edit"):
+                            <a class="btn btn-sm btn-secondary" href="${request.route_path('dashboard/users/show', id=has_user.id)}">
+                                Bearbeiten
+                            </a>
+                        % endif
                     </td>
                 </tr>
             % endfor
         </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="6" class="text-right">
-                    % if has_noninvited:
+        % if request.has_permission('edit'):
+            <tfoot>
+                <tr>
+                    <th colspan="6" class="text-right">
+                        % if has_noninvited:
+                            <p>
+                                <a href="${request.route_path('dashboard/users/invite', id=organization.id)}" class="btn btn-primary">
+                                    Einladungen verschicken
+                                </a>
+                            </p>
+                        % endif
                         <p>
-                            <a href="${request.route_path('dashboard/users/invite', id=organization.id)}" class="btn btn-primary">
-                                Einladungen verschicken
+                            <a href="${request.route_path('dashboard/users/new-batch', id=organization.id)}" class="btn btn-primary">
+                                Mehrere Mitglieder hinzufügen
+                            </a>
+                            <a href="${request.route_path('dashboard/users/new', id=organization.id)}" class="btn btn-primary">
+                                Neues Mitglied hinzufügen
                             </a>
                         </p>
-                    % endif
-                    <p>
-                        <a href="${request.route_path('dashboard/users/new-batch', id=organization.id)}" class="btn btn-primary">
-                            Mehrere Mitglieder hinzufügen
-                        </a>
-                        <a href="${request.route_path('dashboard/users/new', id=organization.id)}" class="btn btn-primary">
-                            Neues Mitglied hinzufügen
-                        </a>
-                    </p>
-                </th>
-            </tr>
-        </tfoot>
+                    </th>
+                </tr>
+            </tfoot>
+        % endif
     </table>
 
     <h2>Rollen</h2>
@@ -121,26 +125,32 @@
                         % endif
                     </td>
                     <td class="text-right">
-                        % if role_org == organization:
+                        % if role_org == organization and request.has_permission("edit"):
                             <a class="btn btn-sm btn-secondary" href="${request.route_path('dashboard/roles/show', id=role.id)}">
                                 Bearbeiten
                             </a>
                         % else:
-                            (aus übergeordneter Organisation <i>${role_org.name}</i>)
+                            % if request.has_permission("edit", role_org):
+                                (aus <a href="${request.route_path('dashboard/organizations/show', id=role_org.id)}">${role_org.name}</a>)
+                            % else:
+                                (aus <i>${role_org.name}</i>)
+                            % endif
                         % endif
                     </td>
                 </tr>
             % endfor
         </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4" class="text-right">
-                    <a href="${request.route_path('dashboard/roles/new', id=organization.id)}" class="btn btn-primary">
-                        Rolle hinzufügen
-                    </a>
-                </th>
-            </tr>
-        </tfoot>
+        % if request.has_permission("edit") and request.has_permission("edit"):
+            <tfoot>
+                <tr>
+                    <th colspan="4" class="text-right">
+                        <a href="${request.route_path('dashboard/roles/new', id=organization.id)}" class="btn btn-primary">
+                            Rolle hinzufügen
+                        </a>
+                    </th>
+                </tr>
+            </tfoot>
+        % endif
     </table>
 
     <h2>Status</h2>
@@ -166,42 +176,52 @@
                         ${"Ja" if status.is_available else "Nein"}
                     </td>
                     <td class="text-right">
-                        % if status_org == organization:
+                        % if status_org == organization and request.has_permission("edit"):
                             <a class="btn btn-sm btn-secondary" href="${request.route_path('dashboard/status/show', id=status.id)}">
                                 Bearbeiten
                             </a>
                         % else:
-                            (aus übergeordneter Organisation <i>${status_org.name}</i>)
+                            % if request.has_permission("edit", status_org):
+                                (aus <a href="${request.route_path('dashboard/organizations/show', id=status_org.id)}">${status_org.name}</a>)
+                            % else:
+                                (aus <i>${status_org.name}</i>)
+                            % endif
                         % endif
                     </td>
                 </tr>
             % endfor
         </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4" class="text-right">
-                    <a href="${request.route_path('dashboard/status/new', id=organization.id)}" class="btn btn-primary">
-                        Status hinzufügen
-                    </a>
-                </th>
-            </tr>
-        </tfoot>
+        % if request.has_permission("edit"):
+            <tfoot>
+                <tr>
+                    <th colspan="4" class="text-right">
+                        <a href="${request.route_path('dashboard/status/new', id=organization.id)}" class="btn btn-primary">
+                            Status hinzufügen
+                        </a>
+                    </th>
+                </tr>
+            </tfoot>
+        % endif
     </table>
 
-    <h2>Organisation bearbeiten</h2>
+    % if request.has_permission('edit'):
+        <h2>Organisation bearbeiten</h2>
 
-    <form method="POST" action="${request.route_path('dashboard/organizations/show', id=organization.id)}">
-        <div class="form-group">
-            ${field(form.name)}
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                ${field(form.postal_code)}
+        <form method="POST" action="${request.route_path('dashboard/organizations/show', id=organization.id)}">
+            <div class="form-group">
+                ${field(form.name)}
             </div>
-            <div class="form-group col-md-6">
-                ${field(form.city)}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    ${field(form.postal_code)}
+                </div>
+                <div class="form-group col-md-6">
+                    ${field(form.city)}
+                </div>
             </div>
-        </div>
-        <input type="submit" value="Speichern" class="btn btn-primary" />
-    </form>
+            <p class="text-right">
+                <input type="submit" value="Speichern" class="btn btn-primary" />
+            </p>
+        </form>
+    % endif
 </div>

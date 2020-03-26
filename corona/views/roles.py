@@ -21,6 +21,7 @@ class RoleForm(Form):
 @view_config(
     route_name="dashboard/roles/show",
     renderer="../templates/dashboard/organizations/roles/show.mako",
+    permission="edit",
 )
 def show(request):
     form = RoleForm(request.POST, request.context)

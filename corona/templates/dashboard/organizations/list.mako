@@ -6,19 +6,36 @@
             % for i in range(level):
                 <span class="mx-2"></span>
             % endfor
-            <a href="${request.route_path('dashboard/organizations/show', id=base.id)}" class="font-weight-bold">
-                ${base.name}
-            </a>
-            <span class="mx-2"></span>
-            ${len(base.has_users)} ${"Mitglied" if len(base.has_users) == 1 else "Mitglieder"}
+            % if request.has_permission("details", base):
+                <a href="${request.route_path('dashboard/organizations/show', id=base.id)}" class="font-weight-bold">
+            % else:
+                <strong>
+            % endif
+            ${base.name}
+            % if request.has_permission("details", base):
+                </a>
+            % else:
+                </strong>
+            % endif
+            % if request.has_permission("details", base):
+                <span class="mx-2"></span>
+                ${len(base.has_users)} ${"Mitglied" if len(base.has_users) == 1 else "Mitglieder"}
+            % elif request.user in [h.user for h in base.has_users]:
+                <span class="mx-2"></span>
+                Du bist hier Mitglied!
+            % endif
         </div>
-        <div class="text-right">
-            <span class="mx-2"></span>
-            <a href="${request.route_path('dashboard/organizations/new', id=base.id)}">Unterorganisation anlegen</a>
-        </span>
+        % if request.has_permission("edit", base):
+            <div class="text-right">
+                <span class="mx-2"></span>
+                <a href="${request.route_path('dashboard/organizations/new', id=base.id)}">Unterorganisation anlegen</a>
+            </span>
+        % endif
     </li>
     % for sub in base.children:
-        ${show_tree(sub, level+1)}
+        % if request.has_permission("view", sub):
+            ${show_tree(sub, level+1)}
+        % endif
     % endfor
 </%def>
 

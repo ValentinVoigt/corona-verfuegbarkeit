@@ -15,6 +15,7 @@ class OrganizationForm(Form):
 @view_config(
     route_name="dashboard/organizations",
     renderer="../templates/dashboard/organizations/list.mako",
+    permission="loggedin",
 )
 def list(request):
     return dict(organizations=request.user.root_organizations)
@@ -23,13 +24,14 @@ def list(request):
 @view_config(
     route_name="dashboard/organizations/show",
     renderer="../templates/dashboard/organizations/show.mako",
-    permission="edit",
+    permission="details",
 )
 def show(request):
     form = OrganizationForm(request.POST, request.context)
-    if request.method == "POST" and form.validate():
-        form.populate_obj(request.context)
-        request.session.flash("Gespeichert.")
+    if request.has_permission("edit"):
+        if request.method == "POST" and form.validate():
+            form.populate_obj(request.context)
+            request.session.flash("Gespeichert.")
 
     return dict(organization=request.context, form=form)
 

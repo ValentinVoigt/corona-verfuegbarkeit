@@ -3,7 +3,7 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.session import SignedCookieSessionFactory
 
-from .security import groupfinder
+from .security import groupfinder, RootFactory
 
 
 def main(global_config, **settings):
@@ -17,6 +17,7 @@ def main(global_config, **settings):
         authz_policy = ACLAuthorizationPolicy()
         config.set_authentication_policy(authn_policy)
         config.set_authorization_policy(authz_policy)
+        config.set_root_factory(RootFactory)
 
         # Session
         my_session_factory = SignedCookieSessionFactory(
