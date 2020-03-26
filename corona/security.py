@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import bcrypt
 
 from .models import User
@@ -19,16 +21,21 @@ def groupfinder(userid, request):
         return ["group:all", f"user:{user.id}"]
 
 
+def get_current_user(request):
+    user = (
+        request.dbsession.query(User)
+        .filter(User.email == request.authenticated_userid)
+        .first()
+    )
+    if user:
+        user.last_login = datetime.now()
+    return user
+
+
 def includeme(config):
     """
     Initialize the model for a Pyramid app.
 
     Activate this setup using ``config.include('corona.security')``.
     """
-    config.add_request_method(
-        lambda r: r.dbsession.query(User)
-        .filter(User.email == r.authenticated_userid)
-        .first(),
-        "user",
-        reify=True,
-    )
+    config.add_request_method(get_current_user, "user", reify=True)

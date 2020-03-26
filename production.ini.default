@@ -11,6 +11,8 @@ pyramid.debug_authorization = false
 pyramid.debug_notfound = false
 pyramid.debug_routematch = false
 pyramid.default_locale_name = en
+pyramid.includes =
+    pyramid_mailer
 
 sqlalchemy.url = sqlite:///%(here)s/corona.sqlite
 
@@ -18,6 +20,9 @@ retry.attempts = 3
 
 cookie_secret = please_change_me
 media_location = https://www.corona-verfuegbarkeit.de/static
+
+mail.host = localhost
+mail.port = 25
 
 [pshell]
 setup = corona.pshell.setup

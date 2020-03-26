@@ -1,8 +1,16 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, text
+from sqlalchemy import Table, Column, DateTime, ForeignKey, Integer, String, text
 from sqlalchemy.orm import relationship
 from pyramid.security import Allow
 
 from .meta import Base
+
+UserHasRole = Table(
+    "users_has_roles",
+    Base.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key=True, nullable=False,),
+    Column("role_id", ForeignKey("roles.id"), primary_key=True, nullable=False),
+    Column("created_at", DateTime, nullable=False, server_default=text("now()")),
+)
 
 
 class Role(Base):
@@ -16,6 +24,7 @@ class Role(Base):
     minimum_required = Column(Integer)
 
     organization = relationship("Organization", backref="roles")
+    users = relationship("User", secondary=UserHasRole, backref="roles")
 
     @classmethod
     def _factory(cls, request):

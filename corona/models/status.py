@@ -1,5 +1,6 @@
 from sqlalchemy import Column, DateTime, Boolean, ForeignKey, Integer, String, text
 from sqlalchemy.orm import relationship
+from pyramid.security import Allow
 
 from .meta import Base
 
@@ -14,4 +15,15 @@ class Status(Base):
     color = Column(String, nullable=False)
     is_available = Column(Boolean, nullable=False)
 
-    organization = relationship("Organization")
+    organization = relationship("Organization", backref="statuses")
+
+    @classmethod
+    def _factory(cls, request):
+        return (
+            request.dbsession.query(cls)
+            .filter(cls.id == request.matchdict.get("id"))
+            .one()
+        )
+
+    def __acl__(self):
+        return [(Allow, f"user:{user.id}", "edit") for user in self.organization.users]

@@ -29,12 +29,10 @@ class Organization(Base):
         )
 
     def __acl__(self):
-        return [
-            (Allow, f"user:{user.id}", "edit") for user in self.users
-        ]
+        return [(Allow, f"user:{user.id}", "edit") for user in self.recursive_users]
 
     @property
-    def users(self):
+    def recursive_users(self):
         users = [h.user for h in self.has_users]
         if self.parent:
             users.extend(self.parent.users)
@@ -45,11 +43,16 @@ class Organization(Base):
 
     @property
     def recursive_roles(self):
-        result = []
-        for role in self.roles:
-            result.append((self, role))
+        result = [(self, role) for role in self.roles]
         if self.parent:
             result.extend(self.parent.recursive_roles)
+        return result
+
+    @property
+    def recursive_statuses(self):
+        result = [(self, status) for status in self.statuses]
+        if self.parent:
+            result.extend(self.parent.recursive_statuses)
         return result
 
     @property
@@ -58,3 +61,11 @@ class Organization(Base):
             return f"{self.parent.name}, {self.name}"
         else:
             return self.name
+
+    @property
+    def uninvited_users(self):
+        result = []
+        for has_user in self.has_users:
+            if not has_user.user.last_login and not has_user.user.last_invite:
+                result.append(has_user.user)
+        return result

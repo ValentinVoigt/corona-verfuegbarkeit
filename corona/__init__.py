@@ -26,7 +26,6 @@ def main(global_config, **settings):
 
         # Includes
         config.include("pyramid_mako")
-        config.include("pyramid_mailer")
         config.include(".models")
         config.include(".routes")
         config.include(".security")

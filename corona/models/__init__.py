@@ -8,7 +8,6 @@ import zope.sqlalchemy
 from .calendar_entry import CalendarEntry # flake8: noqa
 from .organization import Organization # flake8: noqa
 from .organization_has_user import OrganizationHasUser # flake8: noqa
-from .organization_has_user_has_role import OrganizationHasUserHasRole # flake8: noqa
 from .phone_number import PhoneNumber # flake8: noqa
 from .role import Role # flake8: noqa
 from .status import Status # flake8: noqa

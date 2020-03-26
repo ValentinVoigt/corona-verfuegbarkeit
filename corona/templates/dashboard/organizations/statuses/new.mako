@@ -13,21 +13,26 @@
                 </a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">
-                Neue Mitglieder
+                Neuer Status
             </li>
         </ol>
     </nav>
 
-    <h1>Neue Mitglieder</h1>
+    <h1>Neuer Status</h1>
 
-    <p>
-        Hier kannst du viele Mitglieder auf einmal anlegen. Einfach eine E-Mail-Adresse pro
-        Zeile eintippen. Keine Kommas oder andere Trennzeichen.
-    </p>
-
-    <form method="POST" action="${request.route_path('dashboard/users/new-batch', id=organization.id)}">
+    <form method="POST" action="${request.route_path('dashboard/status/new', id=organization.id)}">
         <div class="form-group">
-            ${field(form.emails, rows=25)}
+            ${field(form.name)}
+        </div>
+        <div class="form-group">
+            ${field(form.color, type="color")}
+        </div>
+        <div class="form-group">
+            <p>Gilt als verfügbar?</p>
+            <div class="form-check">
+                ${form.is_available(class_="form-check-input")}
+                ${form.is_available.label(class_="form-check-label")}
+            </div>
         </div>
         <input type="submit" value="Speichern" class="btn btn-primary" />
     </form>

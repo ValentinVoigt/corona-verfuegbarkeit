@@ -27,6 +27,12 @@ def show(request):
     if request.method == "POST" and form.validate():
         form.populate_obj(request.context)
         request.session.flash("Gespeichert.")
+        return HTTPFound(
+            location=request.route_path(
+                "dashboard/organizations/show", id=request.context.organization.id
+            )
+        )
+
     return dict(role=request.context, form=form)
 
 

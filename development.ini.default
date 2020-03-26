@@ -20,6 +20,9 @@ retry.attempts = 3
 
 cookie_secret = please_change_me
 
+mail.host = localhost
+mail.port = 25
+
 # By default, the toolbar only appears for clients from IP addresses
 # '127.0.0.1' and '::1'.
 # debugtoolbar.hosts = 127.0.0.1 ::1

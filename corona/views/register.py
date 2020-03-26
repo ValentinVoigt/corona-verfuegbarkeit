@@ -1,5 +1,6 @@
 from pyramid.view import view_config
 from wtforms import Form, PasswordField, StringField, validators, ValidationError
+from datetime import datetime
 
 from ..models import Organization, User, OrganizationHasUser
 from ..security import hash_password
@@ -42,6 +43,7 @@ def register(request):
                 first_name=form.first_name.data,
                 last_name=form.last_name.data,
                 password=hash_password(form.password.data),
+                agreed_tos=datetime.now(),
             )
             is_double_registration = False
         else:

@@ -1,8 +1,22 @@
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, text
+from sqlalchemy import Table, Column, DateTime, Enum, ForeignKey, Integer, text
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.associationproxy import association_proxy
 from pyramid.security import Allow
 
 from .meta import Base
+
+OrganizationHasUserHasRole = Table(
+    "organizations_has_users_has_roles",
+    Base.metadata,
+    Column(
+        "organizations_has_users_id",
+        ForeignKey("organizations_has_users.id"),
+        primary_key=True,
+        nullable=False,
+    ),
+    Column("role_id", ForeignKey("roles.id"), primary_key=True, nullable=False),
+    Column("created_at", DateTime, nullable=False, server_default=text("now()")),
+)
 
 
 class OrganizationHasUser(Base):
@@ -20,6 +34,10 @@ class OrganizationHasUser(Base):
 
     organization = relationship("Organization", backref="has_users")
     user = relationship("User", backref="has_organizations")
+    roles = relationship(
+        "Role", secondary=OrganizationHasUserHasRole, backref="has_users"
+    )
+    role_ids = association_proxy("roles", "id")
 
     @classmethod
     def _factory(cls, request):

@@ -1,27 +1,32 @@
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
+from pyramid_mailer.mailer import Mailer
+from pyramid_mailer.message import Message
+from datetime import datetime
 from wtforms import (
     TextAreaField,
     StringField,
     SelectField,
-    SelectMultipleField,
+    BooleanField,
     validators,
     ValidationError,
 )
 
 from ..utils.form import Form
-from ..models import OrganizationHasUser, User, Role
+from ..models import User, OrganizationHasUser
 
+import transaction
 import re
 
+INVITE_EMAIL_SUBJECT = """Deine Verfügbarkeit für {organization}"""
+INVITE_EMAIL_TEXT = """Hallo {receiver},
 
-INVITE_EMAIL = """Hallo {receiver},
+{sender} bittet dich, dich bei Corona-Verfügbarkeit anzumelden und deine
+Verfügbarkeit für die Organisation {organization} anzugeben.
 
-{sender} bittet dich, dich bei Corona-Verfügbarkeit anzumelden und deine Verfügbarkeit für die Organisation {organization} anzugeben.
+Melde dich jetzt an: www.corona-verfügbarkeit.de/login/{token}
 
-Melde dich jetzt an: www.corona-verfügbarkeit.de/login/{token}
-
-Vielen Dank, dein Team von Corona-Verfügbarkeit"""
+Vielen Dank, dein Team von Corona-Verfügbarkeit"""
 
 
 def validate_email(email):
@@ -52,7 +57,6 @@ class UserDetailsForm(UserForm):
         ],
         validators=[validators.InputRequired()],
     )
-    roles = SelectMultipleField("Rollen", coerce=int)
 
 
 class UserBatchForm(Form):
@@ -73,16 +77,48 @@ class UserBatchForm(Form):
     permission="edit",
 )
 def show(request):
-    form = UserDetailsForm(request.POST, request.context.user)
-    form.roles.choices = [
-        (r.id, r.name) for (o, r) in request.context.organization.recursive_roles
-    ]
+    # Erstelle neues Formular mit BooleanField für jede Rolle
+    class DynamicUserDetailsForm(UserDetailsForm):
+        pass
+
+    for org, role in request.context.organization.recursive_roles:
+        setattr(
+            DynamicUserDetailsForm,
+            f"role_{role.id}",
+            BooleanField(role.name, default=role.id in request.context.role_ids),
+        )
+
+    # Hole bestehende Daten
+    default_data = {
+        "email": request.context.user.email,
+        "first_name": request.context.user.first_name,
+        "last_name": request.context.user.last_name,
+        "permission": request.context.permission,
+    }
+
+    # Form-Behandlung
+    form = DynamicUserDetailsForm(request.POST, **default_data)
+
     if request.method == "POST" and form.validate():
-        form.populate_obj(request.context.user)
-        request.context.roles = [
-            request.dbsession.query(Role).get(i) for i in form.roles.data
-        ]
+        request.context.user.email = form.email.data
+        request.context.user.first_name = form.first_name.data
+        request.context.user.last_name = form.last_name.data
+        request.context.permission = form.permission.data
+
+        request.context.roles = list(
+            filter(
+                lambda role: getattr(form, f"role_{role.id}").data,
+                [role for org, role in request.context.organization.recursive_roles],
+            )
+        )
+
         request.session.flash("Gespeichert.")
+        return HTTPFound(
+            location=request.route_path(
+                "dashboard/organizations/show", id=request.context.organization.id
+            )
+        )
+
     return dict(has_user=request.context, form=form)
 
 
@@ -144,18 +180,49 @@ def new_batch(request):
     permission="edit",
 )
 def invite(request):
-    text = INVITE_EMAIL.format(
-        receiver="Max Mustermann",
+    subject = INVITE_EMAIL_SUBJECT.format(organization=request.context.display_name)
+    text = INVITE_EMAIL_TEXT.format(
+        receiver=request.user.display_name,
         sender=request.user.display_name,
         organization=request.context.display_name,
-        token="asd",
+        token="diesisteinbeispiel",
     )
 
-    if request.method == "POST" and form.validate():
+    if request.method == "POST":
+        mailer = Mailer()
+        for user in request.context.uninvited_users:
+            user.ensure_token_exists()
+            user.last_invite = datetime.now()
+            message = Message(
+                subject=INVITE_EMAIL_SUBJECT.format(
+                    organization=request.context.display_name
+                ),
+                sender="noreply@corona-verfuegbarkeit.de",
+                recipients=[user.email],
+                body=INVITE_EMAIL_TEXT.format(
+                    receiver=user.display_name,
+                    sender=request.user.display_name,
+                    organization=request.context.display_name,
+                    token=user.auth_token,
+                ),
+            )
+
+            mailer.send(message)
+
+        request.session.flash(
+            f"{len(request.context.uninvited_users)} Mails verschickt!"
+        )
+        transaction.commit()
+
         return HTTPFound(
             location=request.route_path(
                 "dashboard/organizations/show", id=request.context.id
             )
         )
 
-    return dict(organization=request.context, text=text, num=0,)
+    return dict(
+        organization=request.context,
+        text=text,
+        subject=subject,
+        num=len(request.context.uninvited_users),
+    )
