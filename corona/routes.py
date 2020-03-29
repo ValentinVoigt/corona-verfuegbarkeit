@@ -75,3 +75,8 @@ def includeme(config):
 
     # Calendar
     config.add_route("dashboard/calendar", "/dashboard/calendar")
+    config.add_route(
+        "dashboard/calendar/delete",
+        "/dashboard/calendar/loeschen/{id}",
+        factory="corona.models.calendar_entry.CalendarEntry._factory",
+    )

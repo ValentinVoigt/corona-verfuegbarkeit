@@ -13,7 +13,10 @@ class Status(Base):
     name = Column(String, nullable=False)
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
     color = Column(String, nullable=False)
-    is_available = Column(Boolean, nullable=False)
+    is_available_on_workdays_day = Column(Boolean, nullable=False)
+    is_available_on_weekend_day = Column(Boolean, nullable=False)
+    is_available_on_workdays_night = Column(Boolean, nullable=False)
+    is_available_on_weekend_night = Column(Boolean, nullable=False)
 
     organization = relationship("Organization", backref="statuses")
 

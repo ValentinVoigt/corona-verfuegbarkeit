@@ -9,7 +9,14 @@ from ..models import Status
 class StatusForm(Form):
     name = StringField("Name", [validators.InputRequired()])
     color = StringField("Farbe", [validators.InputRequired()])
-    is_available = BooleanField("Gilt als verfügbar")
+    is_available_on_workdays_day = BooleanField("Verfügbar: werktags, tagsüber")
+    is_available_on_weekend_day = BooleanField("Verfügbar: werktags, nachts")
+    is_available_on_workdays_night = BooleanField(
+        "Verfügbar: wochenende/feiertags, tagsüber"
+    )
+    is_available_on_weekend_night = BooleanField(
+        "Verfügbar: wochenende/feiertags, nachts"
+    )
 
 
 @view_config(
