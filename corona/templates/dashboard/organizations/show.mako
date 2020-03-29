@@ -160,7 +160,6 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
-                <th scope="col">Gilt als verfügbar</th>
                 <th scope="col">&nbsp;</th>
             </tr>
         </thead>
@@ -171,9 +170,6 @@
                     <td>
                         <span class="color-box" style="background-color: ${status.color}"></span>
                         ${status.name}
-                    </td>
-                    <td>
-                        ${"Ja" if status.is_available else "Nein"}
                     </td>
                     <td class="text-right">
                         % if status_org == organization and request.has_permission("edit"):

@@ -30,20 +30,20 @@
         <div class="form-group">
             <p>Gilt als verfügbar?</p>
             <div class="form-check">
-                ${form.is_available_on_workdays_day(class_="form-check-input")}
+                ${form.is_available_on_workdays_day(class_="form-check-input", checked=status.is_available_on_workdays_day)}
                 ${form.is_available_on_workdays_day.label(class_="form-check-label")}
             </div>
             <div class="form-check">
-                ${form.is_available_on_weekend_day (class_="form-check-input")}
-                ${form.is_available_on_weekend_day .label(class_="form-check-label")}
+                ${form.is_available_on_weekend_day(class_="form-check-input", checked=status.is_available_on_weekend_day)}
+                ${form.is_available_on_weekend_day.label(class_="form-check-label")}
             </div>
             <div class="form-check">
-                ${form.is_available_on_workdays_night (class_="form-check-input")}
-                ${form.is_available_on_workdays_night .label(class_="form-check-label")}
+                ${form.is_available_on_workdays_night(class_="form-check-input", checked=status.is_available_on_workdays_night)}
+                ${form.is_available_on_workdays_night.label(class_="form-check-label")}
             </div>
             <div class="form-check">
-                ${form.is_available_on_weekend_night (class_="form-check-input")}
-                ${form.is_available_on_weekend_night .label(class_="form-check-label")}
+                ${form.is_available_on_weekend_night(class_="form-check-input", checked=status.is_available_on_weekend_night)}
+                ${form.is_available_on_weekend_night.label(class_="form-check-label")}
             </div>
         </div>
         <input type="submit" value="Speichern" class="btn btn-primary" />
