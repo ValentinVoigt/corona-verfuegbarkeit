@@ -36,7 +36,13 @@ def validate_email(email):
 
 
 def split_emails(data):
-    return list(set([e.strip().lower() for e in re.split("\t|\n|,|;| ", data.strip())]))
+    # E-Mails raussuchen
+    emails = [e.strip().lower() for e in re.split("\t|\n|,|;| ", data.strip())]
+    # Leere entfernen
+    emails = list(filter(lambda e: bool(e), emails))
+    # Unique machen
+    emails = list(set(emails))
+    return emails
 
 
 class UserForm(Form):
@@ -177,9 +183,7 @@ def new_batch(request):
                     break
             if not user_in_org:
                 existing_user = (
-                    request.dbsession.query(User)
-                    .filter(User.email == email)
-                    .first()
+                    request.dbsession.query(User).filter(User.email == email).first()
                 )
                 if existing_user:
                     user = existing_user
