@@ -23,7 +23,9 @@
                 <span class="mx-2"></span>
                 ${len(base.has_users)} ${"Mitglied" if len(base.has_users) == 1 else "Mitglieder"}
                 <span class="mx-2"></span>
-                Verfügbarkeit heute:
+                <a href="${request.route_path('dashboard/organizations/availability', id=base.id)}">
+                    Verfügbarkeit
+                </a> heute:
                 ${base.num_available(date.today(), 'day')} tagsüber,
                 ${base.num_available(date.today(), 'night')} nachts
             % elif request.user in [h.user for h in base.has_users]:

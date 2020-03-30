@@ -15,25 +15,12 @@
                 </a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">
-                Neue Organisation
+                Verfügbarkeit
             </li>
         </ol>
     </nav>
 
-    <h1>Organisation anlegen</h1>
+    <h1>${organization.display_name}: Verfügbarkeit</h1>
 
-    <form method="POST" action="${request.route_path('dashboard/organizations/new', id=organization.id)}">
-        <div class="form-group">
-            ${field(form.name)}
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                ${field(form.postal_code)}
-            </div>
-            <div class="form-group col-md-6">
-                ${field(form.city)}
-            </div>
-        </div>
-        <input type="submit" value="Speichern" class="btn btn-primary" />
-    </form>
+    folgt
 </div>

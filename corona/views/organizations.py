@@ -51,3 +51,12 @@ def new(request):
         return HTTPFound(location=request.route_path("dashboard/organizations"))
 
     return dict(organization=request.context, form=form)
+
+
+@view_config(
+    route_name="dashboard/organizations/availability",
+    renderer="../templates/dashboard/organizations/availability.mako",
+    permission="details",
+)
+def availability(request):
+    return dict(organization=request.context)

@@ -30,6 +30,11 @@ def includeme(config):
         "/dashboard/organisationen/{id}/neu",
         factory="corona.models.organization.Organization._factory",
     )
+    config.add_route(
+        "dashboard/organizations/availability",
+        "/dashboard/organisationen/{id}/verfuegbarkeit",
+        factory="corona.models.organization.Organization._factory",
+    )
 
     # Users
     config.add_route(

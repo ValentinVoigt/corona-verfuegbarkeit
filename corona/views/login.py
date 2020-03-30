@@ -22,7 +22,8 @@ klicke auf folgenden Link, um dein Passwort zurückzusetzen:
 
 https://www.corona-verfuegbarkeit.de/passwort-vergessen/{token}
 
-Vielen Dank, dein Team von Corona-Verfügbarkeit"""
+Vielen Dank,
+Dein Team von Corona-Verfügbarkeit"""
 
 
 class PasswordForm(Form):

@@ -26,7 +26,8 @@ Verfügbarkeit für die Organisation {organization} anzugeben.
 
 Melde dich jetzt an: https://www.corona-verfuegbarkeit.de/login/{token}
 
-Vielen Dank, dein Team von Corona-Verfügbarkeit"""
+Vielen Dank,
+Dein Team von Corona-Verfügbarkeit"""
 
 
 def validate_email(email):

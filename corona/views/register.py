@@ -21,7 +21,8 @@ Abschluss noch deine E-Mail-Adresse, indem du auf folgenden Link klickst:
 
 https://www.corona-verfuegbarkeit.de/verifiziere/{token}
 
-Vielen Dank, dein Team von Corona-Verfügbarkeit"""
+Vielen Dank,
+Dein Team von Corona-Verfügbarkeit"""
 REGISTER_TEXT_DOUBLE = """Hallo {receiver},
 
 du hast dich soeben bei Corona-Verfügbarkeit registriert. Allerdings hast du
@@ -29,7 +30,8 @@ bereits einen Account bei uns. Ein neuer Account wurde nicht angelegt. Wenn du
 dein Passwort vergessen hast, verwende die Passwort-vergessen-Funktion.
 Sobald du eingeloggt bist, kannst du eine neue Organisation anlegen.
 
-Vielen Dank, dein Team von Corona-Verfügbarkeit"""
+Vielen Dank,
+Dein Team von Corona-Verfügbarkeit"""
 
 
 class NewOrganizationForm(Form):
