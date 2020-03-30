@@ -5,6 +5,7 @@ from pyramid_mailer.mailer import Mailer
 from pyramid_mailer.message import Message
 from datetime import datetime
 from wtforms import PasswordField, validators, ValidationError
+import transaction
 
 from ..security import check_password, hash_password
 from ..models import User
@@ -120,6 +121,7 @@ def resetpw(request):
                 ),
             )
             mailer.send(message)
+            transaction.commit()
 
     return {}
 

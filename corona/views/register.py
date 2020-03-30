@@ -5,6 +5,7 @@ from pyramid_mailer.message import Message
 from wtforms import PasswordField, StringField, validators, ValidationError
 from datetime import datetime
 from pyramid.security import remember
+import transaction
 
 from ..models import Organization, User, OrganizationHasUser
 from ..security import hash_password
@@ -100,6 +101,7 @@ def register(request):
                 body=REGISTER_TEXT_DOUBLE.format(receiver=user.display_name),
             )
             mailer.send(message)
+            transaction.commit()
             return HTTPFound(request.route_path("register/ok"))
 
         # Add organization
@@ -131,6 +133,7 @@ def register(request):
                 ),
             )
             mailer.send(message)
+            transaction.commit()
             return HTTPFound(request.route_path("register/ok"))
 
     return dict(form=form, error=error)
