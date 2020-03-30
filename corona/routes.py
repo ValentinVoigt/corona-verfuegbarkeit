@@ -10,8 +10,12 @@ def includeme(config):
     # Login, Logout, Registrieren, ...
     config.add_route("login", "/login")
     config.add_route("login/token", "/login/{token}")
+    config.add_route("resetpw", "/passwort-vergessen")
+    config.add_route("resetpw/token", "/passwort-vergessen/{token}")
     config.add_route("logout", "/logout")
     config.add_route("register", "/registrieren")
+    config.add_route("register/ok", "/registrieren/ok")
+    config.add_route("register/verify", "/verifiziere/{token}")
     config.add_route("dashboard/tos", "/dashboard/datenschutz")
 
     # Organizations

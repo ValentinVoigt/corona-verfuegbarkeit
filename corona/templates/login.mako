@@ -36,18 +36,12 @@
         required
     >
 
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" value="remember-me"> Eingeloggt bleiben
-        </label>
-    </div>
-
     <button class="btn btn-lg btn-primary btn-block" type="submit">
         Einloggen
     </button>
 
     <p class="mt-3 mb-0">
-        <a href="#">
+        <a href="${request.route_path('resetpw')}">
             Passwort vergessen?
         </a>
     </p>

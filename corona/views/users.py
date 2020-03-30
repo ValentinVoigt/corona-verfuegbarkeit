@@ -24,7 +24,7 @@ INVITE_EMAIL_TEXT = """Hallo {receiver},
 {sender} bittet dich, dich bei Corona-Verfügbarkeit anzumelden und deine
 Verfügbarkeit für die Organisation {organization} anzugeben.
 
-Melde dich jetzt an: www.corona-verfuegbarkeit.de/login/{token}
+Melde dich jetzt an: https://www.corona-verfuegbarkeit.de/login/{token}
 
 Vielen Dank, dein Team von Corona-Verfügbarkeit"""
 

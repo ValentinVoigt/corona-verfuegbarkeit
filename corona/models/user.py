@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String, text
+from sqlalchemy import Column, Boolean, DateTime, Integer, String, text
 
 import base64
 import os
@@ -25,6 +25,7 @@ class User(Base):
     last_invite = Column(DateTime)
     agreed_tos = Column(DateTime)
     created_at = Column(DateTime, nullable=False, server_default=text("now()"))
+    is_validated = Column(Boolean, nullable=False, server_default="0")
 
     @property
     def organizations(self):
@@ -48,6 +49,9 @@ class User(Base):
     def ensure_token_exists(self):
         if not self.auth_token:
             self.auth_token = generate_token()
+
+    def new_token(self):
+        self.auth_token = generate_token()
 
     @property
     def display_name(self):

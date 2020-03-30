@@ -30,63 +30,53 @@
         % endif
     % endif
 
-    % if success:
-        <div class="alert alert-success">
-            <p><b>Deine Organisation wurde erfolgreich angelegt!</b></p>
-            <p class="card-text">
-                Bitte bestätigte nun noch deine E-Mail-Adresse. Du hast hierfür einen
-                Link per E-Mail erhalten. (Nicht wirklich, aber kommt noch)
-            </p>
-        </div>
-    % else:
-        <p>
-            Pflichtfelder sind <b>fett und mit Sternchen*</b> markiert.
-        </p>
+    <p>
+        Pflichtfelder sind <b>fett und mit Sternchen*</b> markiert.
+    </p>
 
-        <form method="POST" action="${request.route_path('register')}">
-            % if not request.user or not request.user.password:
-                <h2>Persönliche Angaben</h2>
-                % if not request.user:
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            ${field(form.first_name)}
-                        </div>
-                        <div class="form-group col-md-6">
-                            ${field(form.last_name)}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        ${field(form.email)}
-                    </div>
-                % endif
+    <form method="POST" action="${request.route_path('register')}">
+        % if not request.user or not request.user.password:
+            <h2>Persönliche Angaben</h2>
+            % if not request.user:
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        ${field(form.password)}
+                        ${field(form.first_name)}
                     </div>
                     <div class="form-group col-md-6">
-                        ${field(form.password_again)}
+                        ${field(form.last_name)}
                     </div>
                 </div>
+                <div class="form-group">
+                    ${field(form.email)}
+                </div>
             % endif
-
-            <h2>Angaben zur Organisation</h2>
-            <div class="form-group">
-                ${field(form.organization_name)}
-            </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    ${field(form.organization_postal_code)}
+                    ${field(form.password)}
                 </div>
                 <div class="form-group col-md-6">
-                    ${field(form.organization_city)}
+                    ${field(form.password_again)}
                 </div>
             </div>
+        % endif
 
-            <p class="text-right mt-3">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    Organisation anlegen!
-                </button>
-            </p>
-        </form>
-    % endif
+        <h2>Angaben zur Organisation</h2>
+        <div class="form-group">
+            ${field(form.organization_name)}
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                ${field(form.organization_postal_code)}
+            </div>
+            <div class="form-group col-md-6">
+                ${field(form.organization_city)}
+            </div>
+        </div>
+
+        <p class="text-right mt-3">
+            <button type="submit" class="btn btn-primary btn-lg">
+                Organisation anlegen!
+            </button>
+        </p>
+    </form>
 </div>

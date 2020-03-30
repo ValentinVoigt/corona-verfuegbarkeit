@@ -1,10 +1,34 @@
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound
-from wtforms import Form, PasswordField, StringField, validators, ValidationError
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid_mailer.mailer import Mailer
+from pyramid_mailer.message import Message
+from wtforms import PasswordField, StringField, validators, ValidationError
 from datetime import datetime
+from pyramid.security import remember
 
 from ..models import Organization, User, OrganizationHasUser
 from ..security import hash_password
+from ..utils.form import Form
+from ..utils.password import validate_password
+
+
+REGISTER_SUBJECT = """Deine Anmeldung bei Corona-Verfügbarkeit"""
+REGISTER_TEXT_OK = """Hallo {receiver},
+
+du hast dich soeben bei Corona-Verfügbarkeit registriert. Bitte bestätige zum
+Abschluss noch deine E-Mail-Adresse, indem du auf folgenden Link klickst:
+
+https://www.corona-verfuegbarkeit.de/verifiziere/{token}
+
+Vielen Dank, dein Team von Corona-Verfügbarkeit"""
+REGISTER_TEXT_DOUBLE = """Hallo {receiver},
+
+du hast dich soeben bei Corona-Verfügbarkeit registriert. Allerdings hast du
+bereits einen Account bei uns. Ein neuer Account wurde nicht angelegt. Wenn du
+dein Passwort vergessen hast, verwende die Passwort-vergessen-Funktion.
+Sobald du eingeloggt bist, kannst du eine neue Organisation anlegen.
+
+Vielen Dank, dein Team von Corona-Verfügbarkeit"""
 
 
 class NewOrganizationForm(Form):
@@ -16,7 +40,9 @@ class NewOrganizationForm(Form):
 
 
 class PasswordForm(NewOrganizationForm):
-    password = PasswordField("Passwort", [validators.InputRequired()])
+    password = PasswordField(
+        "Passwort", [validators.InputRequired(), validate_password]
+    )
     password_again = PasswordField("Passwort (nochmal)", [validators.InputRequired()])
 
     def validate_password_again(form, field):
@@ -42,20 +68,19 @@ def register(request):
         form = NewUserForm(request.POST)
 
     error = None
-    success = False
 
     if request.method == "POST" and form.validate():
+        mailer = Mailer()
+
         # Add user if not exists
         if request.user:
             user = request.user
-            is_double_registration = False
         else:
             user = (
                 request.dbsession.query(User)
                 .filter(User.email == form.email.data)
                 .first()
             )
-            is_double_registration = bool(user)
 
         if not user:
             user = User(
@@ -65,9 +90,17 @@ def register(request):
                 password=hash_password(form.password.data),
                 agreed_tos=datetime.now(),
             )
-        else:
-            if not user.password:
-                user.password = hash_password(form.password.data)
+        elif request.user and not not user.password:
+            user.password = hash_password(form.password.data)
+        elif not request.user:
+            message = Message(
+                subject=REGISTER_SUBJECT,
+                sender="noreply@corona-verfuegbarkeit.de",
+                recipients=[user.email],
+                body=REGISTER_TEXT_DOUBLE.format(receiver=user.display_name),
+            )
+            mailer.send(message)
+            return HTTPFound(request.route_path("register/ok"))
 
         # Add organization
         organization = Organization(
@@ -88,8 +121,40 @@ def register(request):
             return HTTPFound(
                 request.route_path("dashboard/organizations/show", id=organization.id)
             )
+        else:
+            message = Message(
+                subject=REGISTER_SUBJECT,
+                sender="noreply@corona-verfuegbarkeit.de",
+                recipients=[user.email],
+                body=REGISTER_TEXT_OK.format(
+                    receiver=user.display_name, token=user.auth_token,
+                ),
+            )
+            mailer.send(message)
+            return HTTPFound(request.route_path("register/ok"))
 
-        # Show success message
-        success = True
+    return dict(form=form, error=error)
 
-    return dict(form=form, error=error, success=success)
+
+@view_config(route_name="register/ok", renderer="../templates/registered.mako")
+def register_ok(request):
+    return {}
+
+
+@view_config(route_name="register/verify")
+def verify(request):
+    user = (
+        request.dbsession.query(User)
+        .filter(User.auth_token == request.matchdict["token"])
+        .first()
+    )
+
+    if user and user.password and not user.is_validated:
+        user.is_validated = True
+        user.new_token()
+        headers = remember(request, user.email)
+        return HTTPFound(
+            location=request.route_path("dashboard/organizations"), headers=headers
+        )
+    else:
+        return HTTPNotFound()
