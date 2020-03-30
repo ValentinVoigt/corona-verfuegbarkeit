@@ -170,13 +170,22 @@ def new_batch(request):
         emails = split_emails(form.emails.data)
         num = 0
         for email in emails:
-            user_exists = False
+            user_in_org = False
             for has_user in request.context.has_users:
                 if has_user.user.email.lower() == email.lower():
-                    user_exists = True
+                    user_in_org = True
                     break
-            if not user_exists:
-                user = User(email=email)
+            if not user_in_org:
+                existing_user = (
+                    request.dbsession.query(User)
+                    .filter(User.email == email)
+                    .first()
+                )
+                if existing_user:
+                    user = existing_user
+                else:
+                    user = User(email=email)
+
                 has_user = OrganizationHasUser(organization=request.context, user=user)
                 num += 1
 
