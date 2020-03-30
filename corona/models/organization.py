@@ -140,3 +140,14 @@ class Organization(Base):
             if not has_user.user.last_login and not has_user.user.last_invite:
                 result.append(has_user.user)
         return result
+
+    def num_available(self, day, day_or_night):
+        """
+        day_or_night: "day" oder "night"
+        """
+        result = 0
+        for has_user in self.has_users:
+            status = has_user.status_for(day)
+            if status:
+                result += 1 if status.is_available(day, day_or_night) else 0
+        return result

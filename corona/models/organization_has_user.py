@@ -52,3 +52,8 @@ class OrganizationHasUser(Base):
             (Allow, f"user:{user.id}", "edit")
             for user in self.organization.recursive_users_up
         ]
+
+    def status_for(self, day):
+        for entry in self.calendar:
+            if entry.start <= day <= entry.end:
+                return entry.status

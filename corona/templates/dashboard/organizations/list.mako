@@ -1,5 +1,7 @@
 <%inherit file="../base.mako"/>
 
+<%! from datetime import date %>
+
 <%def name="show_tree(base, level)">
     <li class="list-group-item d-flex justify-content-between">
         <div>
@@ -20,6 +22,10 @@
             % if request.has_permission("details", base):
                 <span class="mx-2"></span>
                 ${len(base.has_users)} ${"Mitglied" if len(base.has_users) == 1 else "Mitglieder"}
+                <span class="mx-2"></span>
+                Verfügbarkeit heute:
+                ${base.num_available(date.today(), 'day')} tagsüber,
+                ${base.num_available(date.today(), 'night')} nachts
             % elif request.user in [h.user for h in base.has_users]:
                 <span class="mx-2"></span>
                 Du bist hier Mitglied!

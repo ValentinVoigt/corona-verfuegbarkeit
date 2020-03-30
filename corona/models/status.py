@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from pyramid.security import Allow
 
 from .meta import Base
+from ..utils.holidays import is_weekend
 
 
 class Status(Base):
@@ -30,3 +31,13 @@ class Status(Base):
 
     def __acl__(self):
         return [(Allow, f"user:{user.id}", "edit") for user in self.organization.users]
+
+    def is_available(self, day, day_or_night):
+        if is_weekend(day) and day_or_night == "day":
+            return self.is_available_on_weekend_day
+        elif is_weekend(day) and day_or_night == "night":
+            return self.is_available_on_weekend_night
+        elif not is_weekend(day) and day_or_night == "day":
+            return self.is_available_on_workdays_day
+        else:
+            return self.is_available_on_workdays_night

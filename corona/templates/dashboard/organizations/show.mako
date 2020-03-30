@@ -1,7 +1,7 @@
 <%inherit file="../base.mako"/>
 <%namespace file="../../functions/field.mako" import="field"/>
 
-<%! from datetime import datetime, timedelta %>
+<%! from datetime import date, datetime, timedelta %>
 
 <div class="container">
     <nav aria-label="breadcrumb">
@@ -27,8 +27,8 @@
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
                 <th scope="col">Rollen</th>
-                <th scope="col">E-Mail-Adresse</th>
-                <th scope="col">Status</th>
+                <th scope="col">Status heute</th>
+                <th scope="col">Login</th>
                 <th scope="col">&nbsp;</th>
             </tr>
         </thead>
@@ -46,20 +46,28 @@
                             &mdash;
                         % endif
                     </td>
-                    <td>${has_user.user.email}</td>
+                    <td>
+                        <% status = has_user.status_for(date.today()) %>
+                        % if status:
+                            <span class="color-box" style="background-color: ${status.color}"></span>
+                            ${status.name}
+                        % else:
+                            ?
+                        % endif
+                    </td>
                     <td>
                         % if has_user.user.last_login:
                             % if datetime.now() - has_user.user.last_login > timedelta(days=180):
-                                <span class="text-danger">inaktiv</span>, letzter Login ${has_user.user.last_login}
+                                <span class="text-danger">inaktiv</span>, letzter Login ${has_user.user.last_login.strftime('%d.%m.%Y')}
                             % else:
-                                <span class="text-success">aktiv</span>, letzter Login ${has_user.user.last_login}
+                                <span class="text-success">aktiv</span>, letzter Login ${has_user.user.last_login.strftime('%d.%m.%Y')}
                             % endif
                         % else:
                             % if has_user.user.last_invite is None:
                                 <span class="text-danger">noch nicht eingeladen</span>
                                 <% has_noninvited = True %>
                             % else:
-                                <span class="text-warning">eingeladen</span>, am ${has_user.user.last_invite}
+                                <span class="text-warning">eingeladen</span>, am ${has_user.user.last_invite.strftime('%d.%m.%Y')}
                             % endif
                         % endif
                     </td>
