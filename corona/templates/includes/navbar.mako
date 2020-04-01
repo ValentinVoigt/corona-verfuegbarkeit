@@ -36,7 +36,9 @@
                             Eingeloggt als ${request.user.display_name}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="${request.route_path('dashboard/calendar')}">Meine Verfügbarkeit</a>
+                            % if len(request.user.has_organizations) > 0:
+                                <a class="dropdown-item" href="${request.route_path('dashboard/calendar', id=request.user.has_organizations[0].id)}">Meine Verfügbarkeit</a>
+                            % endif
                             <a class="dropdown-item" href="${request.route_path('dashboard/organizations')}">Meine Organisationen</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-danger" href="${request.route_path('logout')}">Ausloggen</a>

@@ -9,6 +9,20 @@
         </ol>
     </nav>
 
+    % if len(request.user.has_organizations) > 1:
+        <ul class="nav nav-tabs">
+            % for has_organization in request.user.has_organizations:
+                <li class="nav-item">
+                    <a
+                        class="nav-link${' active' if has_organization.id==request.context.id else ''}"
+                        href="${request.route_path('dashboard/calendar', id=has_organization.id)}">
+                        ${has_organization.organization.display_name}
+                    </a>
+                </li>
+            % endfor
+        </ul>
+    % endif
+
     % if not has_name:
         <h1>Meine Daten</h1>
 
@@ -16,7 +30,7 @@
             Bitte gib zuerst deinen Namen für die Organisation ${organization.display_name} ein.
         </p>
 
-        <form method="POST" action="${request.route_path('dashboard/calendar')}">
+        <form method="POST" action="${request.route_path('dashboard/calendar', id=request.context.id)}">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     ${field(name_form.first_name)}
@@ -32,7 +46,7 @@
     % else:
         <h1>Meine Verfügbarkeit</h1>
         <h2 class="h5">Neuen Status eintragen</h2>
-        <form method="POST" action="${request.route_path('dashboard/calendar')}">
+        <form method="POST" action="${request.route_path('dashboard/calendar', id=request.context.id)}">
             <div class="form-group">
                 ${field(calendar_form.start, type="date")}
             </div>

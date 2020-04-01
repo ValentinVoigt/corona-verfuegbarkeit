@@ -40,17 +40,14 @@ class CalendarForm(Form):
 @view_config(
     route_name="dashboard/calendar",
     renderer="../templates/dashboard/calendar.mako",
-    permission="loggedin",
+    permission="calendar",
 )
 def calendar(request):
     calendar_form = None
     name_form = None
     has_name = all([request.user.first_name, request.user.last_name])
 
-    if len(request.user.has_organizations) > 1:
-        raise NotImplementedError("Not yet implemented")
-
-    has_user = request.user.has_organizations[0]
+    has_user = request.context
     organization = has_user.organization
 
     if not has_name:
@@ -58,7 +55,7 @@ def calendar(request):
         if request.method == "POST" and name_form.validate():
             name_form.populate_obj(request.user)
             request.session.flash("Dein Name wurden gespeichert.")
-            return HTTPFound(request.route_path("dashboard/calendar"))
+            return HTTPFound(request.route_path("dashboard/calendar", id=has_user.id))
     else:
         calendar_form = CalendarForm(
             request.POST,
@@ -78,7 +75,7 @@ def calendar(request):
                 )
             )
             request.session.flash("Neuer Kalendereintrag wurde hinzugefügt.")
-            return HTTPFound(request.route_path("dashboard/calendar"))
+            return HTTPFound(request.route_path("dashboard/calendar", id=has_user.id))
 
     return dict(
         calendar_form=calendar_form,
@@ -95,4 +92,8 @@ def calendar(request):
 def delete(request):
     request.dbsession.delete(request.context)
     request.session.flash("Kalendereintrag wurde gelöscht.")
-    return HTTPFound(request.route_path("dashboard/calendar"))
+    return HTTPFound(
+        request.route_path(
+            "dashboard/calendar", id=request.context.organization_has_user.id
+        )
+    )

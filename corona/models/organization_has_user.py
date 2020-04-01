@@ -51,6 +51,9 @@ class OrganizationHasUser(Base):
         return [
             (Allow, f"user:{user.id}", "edit")
             for user in self.organization.recursive_users_up
+        ] + [
+            (Allow, f"user:{h.user.id}", "calendar")
+            for h in self.organization.has_users
         ]
 
     def status_for(self, day):

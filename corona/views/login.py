@@ -72,9 +72,17 @@ def login_token(request):
         user.is_validated = True
         headers = remember(request, user.email)
         if user.agreed_tos:
-            return HTTPFound(
-                location=request.route_path("dashboard/calendar"), headers=headers
-            )
+            if len(request.user.has_organizations) > 0:
+                return HTTPFound(
+                    location=request.route_path("dashboard/calendar"),
+                    headers=headers,
+                    id=request.user.has_organizations[0].id,
+                )
+            else:
+                return HTTPFound(
+                    location=request.route_path("dashboard/organizations"),
+                    headers=headers,
+                )
         else:
             return HTTPFound(
                 location=request.route_path("dashboard/tos"), headers=headers
@@ -91,7 +99,14 @@ def login_token(request):
 def tos(request):
     if request.method == "POST" and request.POST["agrees"] == "yes":
         request.user.agreed_tos = datetime.now()
-        return HTTPFound(location=request.route_path("dashboard/calendar"))
+        if len(request.user.has_organizations) > 0:
+            return HTTPFound(
+                location=request.route_path(
+                    "dashboard/calendar", id=request.user.has_organizations[0].id
+                )
+            )
+        else:
+            return HTTPFound(location=request.route_path("dashboard/organizations"))
 
     return dict()
 
