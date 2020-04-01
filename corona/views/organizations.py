@@ -1,4 +1,4 @@
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.view import view_config
 from datetime import date
 from wtforms import StringField, validators
@@ -62,33 +62,44 @@ def new(request):
     permission="details",
 )
 def availability(request):
-    #datetime.datetime.strptime(date_string, format1).strftime(format2)
+    try:
+        mydate = date(*[int(i) for i in request.matchdict["date"].split("-")])
+    except:
+        raise HTTPNotFound()
+
+    roles = [
+        {
+            "label": "Alle",
+            "day": request.context.num_available(mydate, "day"),
+            "night": request.context.num_available(mydate, "night"),
+        }
+    ] + [
+        {
+            "label": r.name,
+            "day": request.context.num_available(mydate, "day", r),
+            "night": request.context.num_available(mydate, "night", r),
+        }
+        for o, r in request.context.recursive_roles
+    ]
 
     data = {
-        'type': 'bar',
-        'data': {
-            'labels': ["A", "B", "C"],
-            'datasets': [
+        "type": "bar",
+        "data": {
+            "labels": [r["label"] for r in roles],
+            "datasets": [
                 {
-                    'data': [10, 20, 30],
-                    'backgroundColor': "blue",
-                    'label': "asdf",
+                    "data": [r["day"] for r in roles],
+                    "backgroundColor": "#EF810E",
+                    "label": "Tagsüber",
                 },
                 {
-                    'data': [20, 30, 10],
-                    'backgroundColor': "red",
-                    'label': "roflcopter",
+                    "data": [r["night"] for r in roles],
+                    "backgroundColor": "#001A26",
+                    "label": "Nachts",
                 },
             ],
         },
-        'options': {
-            'scales': {
-                'yAxes': [{
-                    'ticks': {
-                        'beginAtZero': True,
-                    },
-                }],
-            },
-        },
+        "options": {"scales": {"yAxes": [{"ticks": {"beginAtZero": True}}]}},
     }
-    return dict(organization=request.context, data=json.dumps(data))
+
+    return dict(organization=request.context, data=json.dumps(data), mydate=mydate)
