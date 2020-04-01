@@ -23,7 +23,7 @@
                 <span class="mx-2"></span>
                 ${len(base.has_users)} ${"Mitglied" if len(base.has_users) == 1 else "Mitglieder"}
                 <span class="mx-2"></span>
-                <a href="${request.route_path('dashboard/organizations/availability', id=base.id)}">
+                <a href="${request.route_path('dashboard/organizations/availability', id=base.id, date=date.today().strftime('%Y-%m-%d'))}">
                     Verfügbarkeit
                 </a> heute:
                 ${base.num_available(date.today(), 'day')} tagsüber,

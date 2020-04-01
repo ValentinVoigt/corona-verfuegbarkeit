@@ -32,7 +32,7 @@ def includeme(config):
     )
     config.add_route(
         "dashboard/organizations/availability",
-        "/dashboard/organisationen/{id}/verfuegbarkeit",
+        "/dashboard/organisationen/{id}/verfuegbarkeit/{date}",
         factory="corona.models.organization.Organization._factory",
     )
 

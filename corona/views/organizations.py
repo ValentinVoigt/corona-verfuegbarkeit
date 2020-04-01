@@ -1,6 +1,9 @@
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
+from datetime import date
 from wtforms import StringField, validators
+
+import json
 
 from ..models import Organization
 from ..utils.form import Form
@@ -59,4 +62,33 @@ def new(request):
     permission="details",
 )
 def availability(request):
-    return dict(organization=request.context)
+    #datetime.datetime.strptime(date_string, format1).strftime(format2)
+
+    data = {
+        'type': 'bar',
+        'data': {
+            'labels': ["A", "B", "C"],
+            'datasets': [
+                {
+                    'data': [10, 20, 30],
+                    'backgroundColor': "blue",
+                    'label': "asdf",
+                },
+                {
+                    'data': [20, 30, 10],
+                    'backgroundColor': "red",
+                    'label': "roflcopter",
+                },
+            ],
+        },
+        'options': {
+            'scales': {
+                'yAxes': [{
+                    'ticks': {
+                        'beginAtZero': True,
+                    },
+                }],
+            },
+        },
+    }
+    return dict(organization=request.context, data=json.dumps(data))

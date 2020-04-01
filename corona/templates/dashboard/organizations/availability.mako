@@ -22,5 +22,9 @@
 
     <h1>${organization.display_name}: Verfügbarkeit</h1>
 
-    folgt
+    <canvas id="myChart" width="400" height="200"></canvas>
+    <%block name="script">
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, ${data|n});
+    </%block>
 </div>
