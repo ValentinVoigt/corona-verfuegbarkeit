@@ -72,11 +72,12 @@ def login_token(request):
         user.is_validated = True
         headers = remember(request, user.email)
         if user.agreed_tos:
-            if len(request.user.has_organizations) > 0:
+            if len(user.has_organizations) > 0:
                 return HTTPFound(
-                    location=request.route_path("dashboard/calendar"),
+                    location=request.route_path(
+                        "dashboard/calendar", id=user.has_organizations[0].id
+                    ),
                     headers=headers,
-                    id=request.user.has_organizations[0].id,
                 )
             else:
                 return HTTPFound(
