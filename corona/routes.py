@@ -17,6 +17,7 @@ def includeme(config):
     config.add_route("register/ok", "/registrieren/ok")
     config.add_route("register/verify", "/verifiziere/{token}")
     config.add_route("dashboard/tos", "/dashboard/datenschutz")
+    config.add_route("dashboard/force_password", "/dashboard/passwort-setzen")
 
     # Organizations
     config.add_route("dashboard/organizations", "/dashboard/organisationen")

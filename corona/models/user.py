@@ -59,3 +59,10 @@ class User(Base):
             return f"{self.first_name} {self.last_name}"
         else:
             return self.first_name or self.last_name or self.email
+
+    @property
+    def needs_password(self):
+        for has_organization in self.has_organizations:
+            if has_organization.permission != "member":
+                return True
+        return False

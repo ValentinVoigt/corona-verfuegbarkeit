@@ -1,4 +1,4 @@
-<%inherit file="layout.mako"/>
+<%inherit file="../layout.mako"/>
 
 <div class="container">
     <h1>Corona-Verfuegbarkeit.de</h1>

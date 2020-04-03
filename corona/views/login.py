@@ -1,5 +1,5 @@
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
-from pyramid.view import view_config
+from pyramid.view import view_config, forbidden_view_config
 from pyramid.security import remember, forget
 from pyramid_mailer.mailer import Mailer
 from pyramid_mailer.message import Message
@@ -71,22 +71,16 @@ def login_token(request):
     if user and not user.password:
         user.is_validated = True
         headers = remember(request, user.email)
-        if user.agreed_tos:
-            if len(user.has_organizations) > 0:
-                return HTTPFound(
-                    location=request.route_path(
-                        "dashboard/calendar", id=user.has_organizations[0].id
-                    ),
-                    headers=headers,
-                )
-            else:
-                return HTTPFound(
-                    location=request.route_path("dashboard/organizations"),
-                    headers=headers,
-                )
+        if len(user.has_organizations) > 0:
+            return HTTPFound(
+                location=request.route_path(
+                    "dashboard/calendar", id=user.has_organizations[0].id
+                ),
+                headers=headers,
+            )
         else:
             return HTTPFound(
-                location=request.route_path("dashboard/tos"), headers=headers
+                location=request.route_path("dashboard/organizations"), headers=headers,
             )
 
     return dict(
@@ -94,22 +88,6 @@ def login_token(request):
             "Bitte nutze deine E-Mail-Adresse und dein Passwort zum Einloggen."
         )
     )
-
-
-@view_config(route_name="dashboard/tos", renderer="../templates/tos.mako")
-def tos(request):
-    if request.method == "POST" and request.POST["agrees"] == "yes":
-        request.user.agreed_tos = datetime.now()
-        if len(request.user.has_organizations) > 0:
-            return HTTPFound(
-                location=request.route_path(
-                    "dashboard/calendar", id=request.user.has_organizations[0].id
-                )
-            )
-        else:
-            return HTTPFound(location=request.route_path("dashboard/organizations"))
-
-    return dict()
 
 
 @view_config(route_name="logout")
@@ -164,3 +142,53 @@ def resetpw_token(request):
         return dict(ok=ok, form=form)
     else:
         return HTTPNotFound()
+
+
+def forward(request):
+    if len(request.user.has_organizations) > 0:
+        return HTTPFound(
+            location=request.route_path(
+                "dashboard/calendar", id=request.user.has_organizations[0].id
+            )
+        )
+    else:
+        return HTTPFound(location=request.route_path("dashboard/organizations"))
+
+
+@view_config(
+    route_name="dashboard/tos",
+    renderer="../templates/tos.mako",
+    permission="no_tos",
+)
+def tos(request):
+    if request.method == "POST" and request.POST["agrees"] == "yes":
+        request.user.agreed_tos = datetime.now()
+        return forward(request)
+
+    return {}
+
+
+@view_config(
+    route_name="dashboard/force_password",
+    renderer="../templates/force_password.mako",
+    permission="no_password",
+)
+def force_password(request):
+    form = PasswordForm(request.POST)
+    if request.method == "POST" and form.validate():
+        request.user.password = hash_password(form.password.data)
+        request.user.new_token()
+        return forward(request)
+
+    return {"form": form}
+
+
+@forbidden_view_config(renderer="../templates/errors/403.mako")
+def forbidden(request):
+    if request.user and not request.user.agreed_tos:
+        return HTTPFound(location=request.route_path("dashboard/tos"))
+
+    if request.user and request.user.needs_password and not request.user.password:
+        return HTTPFound(location=request.route_path("dashboard/force_password"))
+
+    return {}

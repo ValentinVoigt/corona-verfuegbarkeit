@@ -19,7 +19,16 @@ def check_password(pw, hashed_pw):
 def groupfinder(userid, request):
     user = request.dbsession.query(User).filter(User.email == userid).first()
     if user:
-        return ["group:all", f"user:{user.id}"]
+        # Solange wir noch keinen Namen haben oder die AGB noch nicht akzeptiert
+        # wurden, packen wir den Nutzer nicht in seine eigene user:id-Gruppe.
+        # Damit hat er noch keine Rechte auf die meisten Seiten.
+        if user.agreed_tos and user.first_name and user.last_name:
+            if user.needs_password and not user.password:
+                return ["group:all", "group:no_password"]
+            else:
+                return ["group:all", "group:tos", f"user:{user.id}"]
+        else:
+            return ["group:all", "group:no_tos"]
 
 
 def get_current_user(request):
@@ -40,7 +49,11 @@ class RootFactory(object):
     """
 
     def __init__(self, request):
-        self.__acl__ = [(Allow, "group:all", "loggedin")]
+        self.__acl__ = [
+            (Allow, "group:tos", "loggedin"),
+            (Allow, "group:no_tos", "no_tos"),
+            (Allow, "group:no_password", "no_password"),
+        ]
 
 
 def includeme(config):
